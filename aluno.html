@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#142c4c">
+  <title>Comprovante de Matrícula · USP</title>
+  <link rel="icon" href="assets/img/logo-usp.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Roboto+Mono:wght@400;600&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/usp.css">
+</head>
+<body>
+  <div class="faixa-demo" id="faixa-demo" hidden>Protótipo · proposta de novo layout — ambiente de demonstração</div>
+  <div class="listra-topo"></div>
+  <nav class="barra-util" aria-label="Acesso rápido">
+    <div class="container">
+      <a href="https://www5.usp.br/">Portal USP</a>
+      <a href="https://uspdigital.usp.br/jupiterweb/">Júpiter Web</a>
+      <a href="index.html">Validar documento</a>
+      <a href="#como-funciona">Como funciona</a>
+      <span class="espaco"></span>
+      <a href="#privacidade">Privacidade e LGPD</a>
+    </div>
+  </nav>
+  <header class="cabecalho">
+    <div class="container">
+      <a class="marca" href="index.html">
+        <img src="assets/img/logo-usp.svg" alt="USP">
+        <span><span class="titulo">Universidade de São Paulo</span><br><span class="subtitulo">Brasil</span></span>
+      </a>
+      <nav class="nav-principal" aria-label="Principal">
+        <a href="index.html">Validação</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#privacidade">Privacidade</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero compacto">
+    <div class="container">
+      <div class="sobretitulo">Carteira Digital do Estudante</div>
+      <h1>Comprovante de Matrícula</h1>
+      <p>Verificação instantânea, com assinatura digital da Universidade.</p>
+    </div>
+  </section>
+
+  <main class="container verificacao">
+    <article class="painel doc">
+      <div class="doc-faixa"></div>
+      <div class="doc-corpo" id="conteudo" aria-live="polite">
+        <div class="carregando"><div class="spinner"></div>Verificando assinatura digital…</div>
+      </div>
+    </article>
+
+    <section class="cards-info" id="como-funciona" aria-label="Como funciona">
+      <div class="painel">
+        <div class="num">1</div>
+        <h3>Emitido pela Universidade</h3>
+        <p>Cada carteirinha recebe uma assinatura digital única, gerada no momento da emissão.</p>
+      </div>
+      <div class="painel">
+        <div class="num">2</div>
+        <h3>Um QR code por estudante</h3>
+        <p>O QR leva somente a este comprovante. Nenhum outro dado ou aluno pode ser acessado a partir dele.</p>
+      </div>
+      <div class="painel">
+        <div class="num">3</div>
+        <h3>À prova de adulteração</h3>
+        <p>Se qualquer letra for alterada, a assinatura deixa de conferir e o documento aparece como inválido.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape" id="privacidade">
+    <div class="container">
+      <div>
+        <img src="assets/img/logo-usp.svg" alt="USP">
+        <div>Universidade de São Paulo</div>
+        <div>Cidade Universitária · São Paulo – SP</div>
+      </div>
+      <div>
+        <h4>Privacidade (LGPD)</h4>
+        <p style="margin:0">Os dados do comprovante viajam dentro do próprio QR code e são conferidos no seu aparelho. Nada é enviado a servidores durante a verificação, e o CPF aparece parcialmente oculto.</p>
+      </div>
+      <div>
+        <h4>Links</h4>
+        <a href="https://www5.usp.br/">Portal da USP</a>
+        <a href="https://uspdigital.usp.br/jupiterweb/">Júpiter Web</a>
+        <a href="index.html">Validar outro documento</a>
+      </div>
+    </div>
+    <div class="base">Carteira Digital do Estudante · verificação criptográfica ECDSA P-256</div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/revogados.js"></script>
+  <script src="assets/js/core.js"></script>
+  <script src="assets/js/aluno.js"></script>
+</body>
+</html>

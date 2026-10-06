@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#142c4c">
+  <title>Painel de Emissão · USP</title>
+  <link rel="icon" href="assets/img/logo-usp.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Roboto+Mono:wght@400;600&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/usp.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body class="admin">
+  <div class="listra-topo"></div>
+  <header class="cabecalho">
+    <div class="container">
+      <a class="marca" href="admin.html">
+        <img src="assets/img/logo-usp.svg" alt="USP">
+        <span><span class="titulo">Painel de Emissão</span><br><span class="subtitulo">Carteira Digital do Estudante</span></span>
+      </a>
+      <div class="topo-acoes" id="topo-acoes" hidden>
+        <span class="chip-chave" id="chip-chave" title="Impressão digital da chave de assinatura"></span>
+        <button class="btn btn-sec btn-pequeno" id="btn-bloquear" type="button">Bloquear</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container area-admin">
+
+    <!-- ============ CONFIGURAÇÃO INICIAL ============ -->
+    <section class="painel tela-central" id="tela-setup" hidden>
+      <div class="selo-tela">1ª vez</div>
+      <h1>Configuração inicial</h1>
+      <p>Crie a <strong>senha mestra</strong> do painel. Ela protege a chave que assina digitalmente as carteirinhas: sem ela ninguém consegue emitir documentos, mesmo vendo todo o código no GitHub.</p>
+      <form id="form-setup" class="pilha">
+        <div class="campo">
+          <label for="setup-senha">Senha mestra</label>
+          <input id="setup-senha" type="password" autocomplete="new-password" minlength="10" required>
+          <div class="medidor"><span id="medidor-barra"></span></div>
+          <span class="dica" id="medidor-texto">Mínimo de 10 caracteres. Use uma frase longa, fácil de lembrar.</span>
+        </div>
+        <div class="campo">
+          <label for="setup-confirma">Confirme a senha</label>
+          <input id="setup-confirma" type="password" autocomplete="new-password" required>
+        </div>
+        <button class="btn btn-primario" type="submit" id="btn-setup">Criar chaves da Universidade</button>
+        <div class="msg" id="setup-msg" role="status"></div>
+      </form>
+      <div id="setup-resultado" hidden>
+        <div class="aviso-ok">
+          <strong>Chaves criadas com sucesso.</strong> Último passo: no seu repositório do GitHub, substitua o arquivo
+          <code>assets/js/config.js</code> por este novo arquivo. Enquanto isso, o painel e a verificação já funcionam neste navegador.
+        </div>
+        <div class="linha-botoes">
+          <button class="btn btn-primario" type="button" id="btn-baixar-config-setup">Baixar config.js</button>
+          <button class="btn btn-sec" type="button" id="btn-copiar-config-setup">Copiar conteúdo</button>
+          <button class="btn btn-amarelo" type="button" id="btn-ir-painel">Entrar no painel →</button>
+        </div>
+        <p class="dica">Guarde a senha em local seguro. Ela não pode ser recuperada — se perdê-la, será preciso gerar novas chaves e reemitir as carteirinhas.</p>
+      </div>
+    </section>
+
+    <!-- ============ LOGIN ============ -->
+    <section class="painel tela-central" id="tela-login" hidden>
+      <div class="selo-tela">Acesso restrito</div>
+      <h1>Painel de Emissão</h1>
+      <p>Digite a senha mestra para liberar a assinatura digital das carteirinhas.</p>
+      <form id="form-login" class="pilha">
+        <div class="campo">
+          <label for="login-senha">Senha mestra</label>
+          <input id="login-senha" type="password" autocomplete="current-password" required autofocus>
+        </div>
+        <button class="btn btn-primario" type="submit" id="btn-login">Entrar</button>
+        <div class="msg" id="login-msg" role="status"></div>
+      </form>
+      <p class="dica" id="login-aviso-local" hidden>⚠ Usando chaves salvas apenas neste navegador. Publique o <code>config.js</code> no GitHub para que os QR codes funcionem em qualquer celular.</p>
+    </section>
+
+    <!-- ============ APLICAÇÃO ============ -->
+    <section id="tela-app" hidden>
+      <nav class="abas" role="tablist" aria-label="Seções do painel">
+        <button role="tab" aria-selected="true" data-aba="emitir">Emitir carteirinha</button>
+        <button role="tab" aria-selected="false" data-aba="lote">Emissão em lote</button>
+        <button role="tab" aria-selected="false" data-aba="historico">Histórico <span class="contador" id="cont-historico">0</span></button>
+        <button role="tab" aria-selected="false" data-aba="ajustes">Ajustes</button>
+      </nav>
+
+      <!-- ---------- EMITIR ---------- -->
+      <div class="aba" id="aba-emitir" role="tabpanel">
+        <div class="grade-emitir">
+          <div class="pilha">
+            <details class="painel bloco-ia" id="bloco-ia-unico">
+              <summary><span class="brilho">✦</span> Preencher com IA <span class="dica">cole um e-mail, ficha ou mensagem e a IA completa o formulário</span></summary>
+              <div class="pilha" style="margin-top:14px">
+                <div class="campo">
+                  <label for="ia-texto-unico">Texto com os dados do estudante</label>
+                  <textarea id="ia-texto-unico" placeholder="Ex.: Bom dia! Segue a aluna Maria Eduarda Albuquerque, CPF 529.982.247-25, nº USP 13748291, Engenharia Civil na Poli, 5º semestre, entrou em 2024, nascida em 12/03/2004…"></textarea>
+                </div>
+                <div class="linha-botoes">
+                  <button class="btn btn-primario" type="button" id="btn-ia-unico">✦ Extrair dados</button>
+                  <span class="msg" id="ia-msg-unico" role="status"></span>
+                </div>
+              </div>
+            </details>
+
+            <form class="painel formulario" id="form-aluno" autocomplete="off" novalidate>
+              <h2>Estudante</h2>
+              <div class="grade-campos">
+                <div class="campo largo"><label for="f-nome">Nome completo *</label><input id="f-nome" name="nome" required></div>
+                <div class="campo" id="campo-cpf"><label for="f-cpf">CPF *</label><input id="f-cpf" name="cpf" inputmode="numeric" placeholder="000.000.000-00" required><span class="dica" id="dica-cpf"></span></div>
+                <div class="campo"><label for="f-ra">Nº USP (RA) *</label><input id="f-ra" name="ra" inputmode="numeric" required></div>
+                <div class="campo"><label for="f-nascimento">Data de nascimento</label><input id="f-nascimento" name="nascimento" type="date"><span class="dica" id="dica-idade"></span></div>
+                <div class="campo"><label for="f-foto">Foto (só na carteirinha)</label><input id="f-foto" type="file" accept="image/*"></div>
+              </div>
+
+              <h2>Curso</h2>
+              <div class="grade-campos">
+                <div class="campo largo"><label for="f-curso">Curso *</label><input id="f-curso" name="curso" list="lista-cursos" required></div>
+                <div class="campo largo"><label for="f-unidade">Unidade (escola, faculdade ou instituto) *</label><input id="f-unidade" name="unidade" list="lista-unidades" required></div>
+                <div class="campo"><label for="f-campus">Campus</label><input id="f-campus" name="campus" list="lista-campi"></div>
+                <div class="campo"><label for="f-nivel">Nível</label>
+                  <select id="f-nivel" name="nivel"><option>Graduação</option><option>Mestrado</option><option>Doutorado</option><option>Especialização</option><option>Residência</option></select></div>
+                <div class="campo"><label for="f-turno">Turno</label>
+                  <select id="f-turno" name="turno"><option>Integral</option><option>Matutino</option><option>Vespertino</option><option>Noturno</option></select></div>
+              </div>
+
+              <h2>Período</h2>
+              <div class="grade-campos">
+                <div class="campo"><label for="f-semestre">Semestre atual *</label><input id="f-semestre" name="semestre" type="number" min="1" max="20" required></div>
+                <div class="campo"><label for="f-periodo">Período letivo *</label><input id="f-periodo" name="periodo" placeholder="2026/2" required></div>
+                <div class="campo"><label for="f-ingresso">Ano de ingresso</label><input id="f-ingresso" name="ingresso" type="number" min="1950" max="2100"></div>
+                <div class="campo"><label for="f-conclusao">Conclusão prevista</label><input id="f-conclusao" name="conclusao" type="number" min="1950" max="2100"></div>
+                <div class="campo"><label for="f-validade">Válida até *</label><input id="f-validade" name="validade" type="date" required></div>
+              </div>
+
+              <div class="linha-botoes rodape-form">
+                <button class="btn btn-primario" type="submit" id="btn-emitir">Emitir carteirinha</button>
+                <button class="btn btn-sec" type="button" id="btn-limpar">Nova / limpar</button>
+                <span class="msg" id="form-msg" role="status"></span>
+              </div>
+            </form>
+          </div>
+
+          <aside class="previa">
+            <div class="previa-titulo"><span id="previa-status" class="etiqueta">Prévia ao vivo</span><span class="dica" id="previa-tamanho"></span></div>
+            <div class="cartao-estudante" id="cartao">
+              <div class="ce-topo">
+                <span class="logo-mascara ce-logo"></span>
+                <div><div class="ce-inst">Universidade de São Paulo</div><div class="ce-tipo">Carteira de Estudante</div></div>
+              </div>
+              <div class="ce-listras"></div>
+              <div class="ce-corpo">
+                <div class="ce-foto" id="ce-foto"><span id="ce-iniciais">?</span></div>
+                <div class="ce-dados">
+                  <div class="ce-rotulo">Nome</div><div class="ce-nome" id="ce-nome">Nome do estudante</div>
+                  <div class="ce-rotulo">Curso</div><div class="ce-curso" id="ce-curso">—</div>
+                  <div class="ce-unidade" id="ce-unidade"></div>
+                  <div class="ce-linha">
+                    <div><div class="ce-rotulo">Nº USP</div><div class="ce-valor" id="ce-ra">—</div></div>
+                    <div><div class="ce-rotulo">Validade</div><div class="ce-valor" id="ce-validade">—</div></div>
+                  </div>
+                </div>
+                <div class="ce-qr"><div id="ce-qr"></div><span>Escaneie para validar</span></div>
+              </div>
+              <div class="ce-base" id="ce-base">Documento — · assinatura digital</div>
+            </div>
+            <div class="linha-botoes previa-acoes">
+              <button class="btn btn-primario" type="button" id="btn-png" disabled>Baixar carteirinha (PNG)</button>
+              <button class="btn btn-sec" type="button" id="btn-qr-png" disabled>Baixar só o QR</button>
+              <button class="btn btn-sec" type="button" id="btn-abrir" disabled>Abrir página do aluno</button>
+              <button class="btn btn-sec" type="button" id="btn-copiar" disabled>Copiar link</button>
+            </div>
+            <p class="dica">Os botões são liberados após clicar em <strong>Emitir</strong>, que registra a carteirinha no histórico.</p>
+          </aside>
+        </div>
+      </div>
+
+      <!-- ---------- LOTE ---------- -->
+      <div class="aba" id="aba-lote" role="tabpanel" hidden>
+        <div class="painel bloco">
+          <h2>Importar estudantes</h2>
+          <p class="dica">Cole linhas copiadas do Excel/Google Planilhas (com cabeçalho), um CSV, ou até um texto bagunçado — a IA organiza para você.</p>
+          <div class="campo">
+            <label for="lote-texto">Dados</label>
+            <textarea id="lote-texto" rows="8" placeholder="nome;cpf;ra;curso;unidade;semestre;periodo;ingresso;conclusao;nascimento&#10;Maria Eduarda Albuquerque;529.982.247-25;13748291;Engenharia Civil;Poli;5;2026/2;2024;2028;12/03/2004"></textarea>
+          </div>
+          <div class="linha-botoes">
+            <button class="btn btn-primario" type="button" id="btn-lote-planilha">Ler planilha</button>
+            <button class="btn btn-amarelo" type="button" id="btn-lote-ia">✦ Organizar com IA</button>
+            <label class="btn btn-sec" for="lote-arquivo">Abrir arquivo .csv</label>
+            <input id="lote-arquivo" type="file" accept=".csv,.txt,text/csv" hidden>
+            <button class="btn btn-sec" type="button" id="btn-lote-modelo">Baixar modelo</button>
+            <span class="msg" id="lote-msg" role="status"></span>
+          </div>
+          <div class="grade-campos lote-padroes">
+            <div class="campo"><label for="lote-periodo">Período letivo padrão</label><input id="lote-periodo" placeholder="2026/2"></div>
+            <div class="campo"><label for="lote-validade">Validade padrão</label><input id="lote-validade" type="date"></div>
+            <div class="campo"><label for="lote-nivel">Nível padrão</label><select id="lote-nivel"><option>Graduação</option><option>Mestrado</option><option>Doutorado</option><option>Especialização</option><option>Residência</option></select></div>
+          </div>
+        </div>
+
+        <div class="painel bloco" id="lote-tabela-bloco" hidden>
+          <div class="cabeca-bloco">
+            <h2>Conferência <span class="dica" id="lote-resumo"></span></h2>
+            <div class="linha-botoes">
+              <button class="btn btn-primario" type="button" id="btn-lote-emitir">Emitir todas</button>
+              <button class="btn btn-sec" type="button" id="btn-lote-imprimir" disabled>Imprimir carteirinhas (A4)</button>
+              <button class="btn btn-sec" type="button" id="btn-lote-csv" disabled>Exportar links (CSV)</button>
+              <button class="btn btn-perigo btn-pequeno" type="button" id="btn-lote-limpar">Limpar</button>
+            </div>
+          </div>
+          <div class="tabela-rolagem">
+            <table class="tabela" id="lote-tabela">
+              <thead><tr><th>#</th><th>Nome</th><th>CPF</th><th>Nº USP</th><th>Curso</th><th>Unidade</th><th>Sem.</th><th>Situação</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- HISTÓRICO ---------- -->
+      <div class="aba" id="aba-historico" role="tabpanel" hidden>
+        <div class="painel bloco">
+          <div class="cabeca-bloco">
+            <div class="campo busca"><label for="hist-busca" class="sr-only">Buscar</label><input id="hist-busca" type="search" placeholder="Buscar por nome, Nº USP, curso ou documento…"></div>
+            <div class="linha-botoes">
+              <button class="btn btn-sec btn-pequeno" type="button" id="btn-revogados">Baixar revogados.js</button>
+              <button class="btn btn-sec btn-pequeno" type="button" id="btn-backup">Exportar backup</button>
+              <label class="btn btn-sec btn-pequeno" for="backup-arquivo">Importar backup</label>
+              <input id="backup-arquivo" type="file" accept=".json,application/json" hidden>
+            </div>
+          </div>
+          <div class="kpis" id="hist-kpis"></div>
+          <div class="tabela-rolagem">
+            <table class="tabela" id="hist-tabela">
+              <thead><tr><th>Documento</th><th>Estudante</th><th>Curso</th><th>Emitida</th><th>Validade</th><th>Status</th><th>Ações</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p class="dica" id="hist-vazio" hidden>Nenhuma carteirinha emitida ainda neste navegador.</p>
+          <p class="dica">Para revogar de fato uma carteirinha, marque-a como revogada e publique o <code>revogados.js</code> gerado em <code>assets/js/</code> no GitHub.</p>
+        </div>
+      </div>
+
+      <!-- ---------- AJUSTES ---------- -->
+      <div class="aba" id="aba-ajustes" role="tabpanel" hidden>
+        <div class="grade-ajustes">
+          <section class="painel bloco">
+            <h2><span class="brilho">✦</span> Assistente de IA</h2>
+            <p class="dica">A IA (Claude, da Anthropic) lê textos e planilhas desorganizadas e preenche os cadastros. A chave fica salva somente neste navegador.</p>
+            <div class="campo"><label for="api-chave">Chave da API Anthropic</label><input id="api-chave" type="password" placeholder="sk-ant-…" autocomplete="off"></div>
+            <div class="linha-botoes">
+              <button class="btn btn-primario btn-pequeno" type="button" id="btn-salvar-api">Salvar chave</button>
+              <button class="btn btn-perigo btn-pequeno" type="button" id="btn-remover-api">Remover</button>
+              <span class="msg" id="api-msg"></span>
+            </div>
+            <p class="dica">Privacidade: ao usar a IA, o texto colado (incluindo CPFs) é enviado à API da Anthropic para processamento. Sem a chave, o painel funciona normalmente, apenas sem o preenchimento inteligente.</p>
+          </section>
+
+          <section class="painel bloco">
+            <h2>Privacidade do QR code</h2>
+            <label class="opcao"><input type="radio" name="cpf-modo" value="mascarado" checked> <span><strong>CPF parcialmente oculto</strong> (recomendado · LGPD)<br><span class="dica">Ex.: ***.982.247-**. O CPF completo nunca sai do painel.</span></span></label>
+            <label class="opcao"><input type="radio" name="cpf-modo" value="completo"> <span><strong>CPF completo</strong><br><span class="dica">Todo o CPF fica gravado no QR e visível na página do aluno.</span></span></label>
+          </section>
+
+          <section class="painel bloco">
+            <h2>Segurança</h2>
+            <dl class="info-chave">
+              <dt>Impressão digital da chave</dt><dd id="aj-fingerprint">—</dd>
+              <dt>Origem das chaves</dt><dd id="aj-origem">—</dd>
+            </dl>
+            <div class="linha-botoes"><button class="btn btn-sec btn-pequeno" type="button" id="btn-baixar-config">Baixar config.js atual</button></div>
+            <form id="form-senha" class="pilha" style="margin-top:18px">
+              <h3>Trocar senha mestra</h3>
+              <div class="campo"><label for="senha-atual">Senha atual</label><input id="senha-atual" type="password" autocomplete="current-password" required></div>
+              <div class="campo"><label for="senha-nova">Nova senha</label><input id="senha-nova" type="password" autocomplete="new-password" minlength="10" required></div>
+              <div class="campo"><label for="senha-nova2">Confirme a nova senha</label><input id="senha-nova2" type="password" autocomplete="new-password" required></div>
+              <div class="linha-botoes"><button class="btn btn-primario btn-pequeno" type="submit">Gerar novo config.js</button><span class="msg" id="senha-msg"></span></div>
+              <p class="dica">As carteirinhas já emitidas continuam válidas — só a senha muda.</p>
+            </form>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="area-impressao" aria-hidden="true"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <datalist id="lista-unidades"></datalist>
+  <datalist id="lista-campi"></datalist>
+  <datalist id="lista-cursos">
+    <option>Administração</option><option>Arquitetura e Urbanismo</option><option>Ciência da Computação</option>
+    <option>Ciências Biológicas</option><option>Ciências Contábeis</option><option>Ciências Econômicas</option>
+    <option>Direito</option><option>Enfermagem</option><option>Engenharia Civil</option><option>Engenharia de Computação</option>
+    <option>Engenharia Elétrica</option><option>Engenharia Mecânica</option><option>Engenharia de Produção</option>
+    <option>Engenharia Química</option><option>Engenharia Agronômica</option><option>Farmácia</option><option>Física</option>
+    <option>Geografia</option><option>História</option><option>Jornalismo</option><option>Letras</option>
+    <option>Matemática</option><option>Medicina</option><option>Medicina Veterinária</option><option>Odontologia</option>
+    <option>Pedagogia</option><option>Psicologia</option><option>Química</option><option>Relações Internacionais</option>
+    <option>Sistemas de Informação</option>
+  </datalist>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/revogados.js"></script>
+  <script src="assets/js/core.js"></script>
+  <script src="assets/js/ia.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

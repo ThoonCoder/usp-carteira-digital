@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#142c4c">
+  <title>Carteira Digital USP</title>
+  <meta name="description" content="Validação da Carteira Digital do Estudante da Universidade de São Paulo.">
+  <link rel="icon" href="assets/img/logo-usp.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Roboto+Mono:wght@400;600&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/usp.css">
+  <style>
+    .validador { position: relative; z-index: 3; margin-top: -72px; }
+    .hero .container { padding-bottom: 120px; }
+    .validador > .painel { padding: clamp(20px, 4vw, 36px); display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: center; }
+    .validador > .painel h2 { margin: 0 0 8px; font-size: 26px; }
+    .validador > .painel p { margin: 0 0 18px; color: var(--muted); }
+    .linha-form { display: flex; gap: 10px; }
+    .linha-form .campo { flex: 1; }
+    .camera {
+      aspect-ratio: 4 / 3; max-height: 360px; width: 100%; border-radius: 20px; overflow: hidden; position: relative;
+      background: radial-gradient(circle at 30% 20%, #1c3d63, var(--usp-marinho-2));
+      display: grid; place-items: center; color: #cfe3ef; text-align: center;
+    }
+    .camera video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .camera .mira { position: absolute; inset: 18%; border-radius: 18px; pointer-events: none;
+      box-shadow: 0 0 0 999px rgba(5, 15, 30, .35);
+      background:
+        linear-gradient(var(--usp-amarelo), var(--usp-amarelo)) top left / 34px 4px no-repeat,
+        linear-gradient(var(--usp-amarelo), var(--usp-amarelo)) top left / 4px 34px no-repeat,
+        linear-gradient(var(--usp-amarelo), var(--usp-amarelo)) top right / 34px 4px no-repeat,
+        linear-gradient(var(--usp-amarelo), var(--usp-amarelo)) top right / 4px 34px no-repeat,
+        linear-gradient(var(--usp-amarelo), var(--usp-amarelo)) bottom left / 34px 4px no-repeat,
+        linear-gradient(var(--usp-amarelo), var(--usp-amarelo)) bottom left / 4px 34px no-repeat,
+        linear-gradient(var(--usp-amarelo), var(--usp-amarelo)) bottom right / 34px 4px no-repeat,
+        linear-gradient(var(--usp-amarelo), var(--usp-amarelo)) bottom right / 4px 34px no-repeat;
+    }
+    .camera .mira::after { content: ''; position: absolute; left: 8%; right: 8%; height: 2px; top: 10%; background: var(--usp-ciano); box-shadow: 0 0 12px var(--usp-ciano); animation: varrer 2.2s ease-in-out infinite alternate; }
+    @keyframes varrer { to { top: 90%; } }
+    .camera .aviso { position: relative; padding: 24px; max-width: 30ch; font-size: 15px; }
+    .camera .aviso svg { width: 54px; height: 54px; display: block; margin: 0 auto 12px; color: var(--usp-ciano); }
+    .msg { margin-top: 10px; font-size: 14px; min-height: 20px; }
+    .msg.erro { color: var(--erro); }
+    @media (max-width: 820px) { .validador > .painel { grid-template-columns: 1fr; } .linha-form { flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <div class="faixa-demo" id="faixa-demo" hidden>Protótipo · proposta de novo layout — ambiente de demonstração</div>
+  <div class="listra-topo"></div>
+  <nav class="barra-util" aria-label="Acesso rápido">
+    <div class="container">
+      <a href="https://www5.usp.br/">Portal USP</a>
+      <a href="https://uspdigital.usp.br/jupiterweb/">Júpiter Web</a>
+      <a href="#como-funciona">Como funciona</a>
+      <span class="espaco"></span>
+      <a href="#privacidade">Privacidade e LGPD</a>
+    </div>
+  </nav>
+  <header class="cabecalho">
+    <div class="container">
+      <a class="marca" href="index.html">
+        <img src="assets/img/logo-usp.svg" alt="USP">
+        <span><span class="titulo">Universidade de São Paulo</span><br><span class="subtitulo">Brasil</span></span>
+      </a>
+      <nav class="nav-principal" aria-label="Principal">
+        <a href="index.html" aria-current="page">Validação</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#privacidade">Privacidade</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="sobretitulo">Carteira Digital do Estudante</div>
+      <h1>Matrícula comprovada em um toque.</h1>
+      <p>Aponte a câmera para o QR code da carteirinha e confira, na hora, o vínculo do estudante com a USP — com assinatura digital à prova de falsificação.</p>
+    </div>
+  </section>
+
+  <main class="container validador">
+    <section class="painel">
+      <div>
+        <h2>Validar uma carteirinha</h2>
+        <p>Use a câmera do celular, ou cole abaixo o link lido no QR code.</p>
+        <form class="linha-form" id="form-link">
+          <div class="campo">
+            <label for="link">Link do comprovante</label>
+            <input id="link" type="url" inputmode="url" placeholder="https://…/aluno.html#…" autocomplete="off">
+          </div>
+          <button class="btn btn-primario" type="submit" style="align-self:end">Verificar</button>
+        </form>
+        <div class="msg" id="msg" role="status"></div>
+      </div>
+      <div class="camera" id="camera">
+        <div class="aviso" id="camera-aviso">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 7h4v4H7zM13 13h4v4h-4zM13 7h4M7 13v4"/></svg>
+          <div id="camera-texto">Aponte a câmera nativa do celular para o QR code — o comprovante abre automaticamente.</div>
+          <button class="btn btn-amarelo" id="btn-camera" type="button" style="margin-top:16px" hidden>Abrir câmera aqui</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="cards-info" id="como-funciona" aria-label="Como funciona">
+      <div class="painel">
+        <div class="num">1</div>
+        <h3>Emissão pela secretaria</h3>
+        <p>A Universidade preenche os dados do estudante e o sistema gera, na hora, a carteirinha com QR code assinado digitalmente.</p>
+      </div>
+      <div class="painel">
+        <div class="num">2</div>
+        <h3>Um QR, um estudante</h3>
+        <p>Cada QR abre uma página exclusiva daquele aluno, com curso, unidade, semestre e período letivo.</p>
+      </div>
+      <div class="painel">
+        <div class="num">3</div>
+        <h3>Verificação sem servidor</h3>
+        <p>A assinatura é conferida no próprio aparelho. Documento alterado, vencido ou cancelado aparece imediatamente.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape" id="privacidade">
+    <div class="container">
+      <div>
+        <img src="assets/img/logo-usp.svg" alt="USP">
+        <div>Universidade de São Paulo</div>
+        <div>Cidade Universitária · São Paulo – SP</div>
+      </div>
+      <div>
+        <h4>Privacidade (LGPD)</h4>
+        <p style="margin:0">Não há banco de dados público de estudantes. Cada comprovante só existe dentro do QR code entregue ao próprio aluno, e o CPF é exibido parcialmente oculto.</p>
+      </div>
+      <div>
+        <h4>Links</h4>
+        <a href="https://www5.usp.br/">Portal da USP</a>
+        <a href="https://uspdigital.usp.br/jupiterweb/">Júpiter Web</a>
+      </div>
+    </div>
+    <div class="base">Carteira Digital do Estudante · verificação criptográfica ECDSA P-256</div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/core.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const cfg = USP.configAtiva();
+    if (cfg.modoDemonstracao !== false) document.getElementById('faixa-demo').hidden = false;
+
+    const msg = document.getElementById('msg');
+    function abrir(texto) {
+      const t = String(texto || '').trim();
+      const i = t.indexOf('#');
+      if (i === -1 || !/aluno\.html/.test(t.slice(0, i))) {
+        msg.className = 'msg erro';
+        msg.textContent = 'Esse link não é de um comprovante da Carteira Digital.';
+        return false;
+      }
+      location.href = 'aluno.html' + t.slice(i);
+      return true;
+    }
+    document.getElementById('form-link').addEventListener('submit', e => {
+      e.preventDefault();
+      abrir(document.getElementById('link').value);
+    });
+
+    // Leitor integrado (Chrome/Edge no Android e desktop). No iPhone, a câmera nativa já abre o link.
+    if ('BarcodeDetector' in window && navigator.mediaDevices) {
+      const btn = document.getElementById('btn-camera');
+      btn.hidden = false;
+      document.getElementById('camera-texto').textContent = 'Leia o QR code direto por aqui, sem instalar nada.';
+      btn.addEventListener('click', async () => {
+        try {
+          const detector = new BarcodeDetector({ formats: ['qr_code'] });
+          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+          const video = document.createElement('video');
+          video.setAttribute('playsinline', '');
+          video.muted = true;
+          video.srcObject = stream;
+          const cam = document.getElementById('camera');
+          document.getElementById('camera-aviso').remove();
+          cam.append(video);
+          const mira = document.createElement('div');
+          mira.className = 'mira';
+          cam.append(mira);
+          await video.play();
+          const ler = async () => {
+            try {
+              const achados = await detector.detect(video);
+              if (achados.length && abrir(achados[0].rawValue)) {
+                stream.getTracks().forEach(t => t.stop());
+                return;
+              }
+            } catch (e) { /* quadro ainda não pronto */ }
+            requestAnimationFrame(ler);
+          };
+          ler();
+        } catch (e) {
+          msg.className = 'msg erro';
+          msg.textContent = 'Não foi possível acessar a câmera. Use a câmera nativa do celular ou cole o link.';
+        }
+      });
+    }
+  })();
+  </script>
+</body>
+</html>
