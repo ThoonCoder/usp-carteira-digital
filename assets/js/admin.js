@@ -263,9 +263,9 @@
   }
 
   /* ---------- Carteirinha em alta resolução (canvas) ---------- */
-  const LOGO = typeof Path2D !== 'undefined'
-    ? new Path2D('M9 8 V35 Q9 51 24 51 Q38 51 38 35 V8 M76 12 H55 Q46 12 46 21 Q46 30 55 30 H65 Q74 30 74 40 Q74 50 64 50 H44 M86 52 V10 H107 Q122 10 122 23 Q122 36 107 36 H86')
-    : null;
+  const LOGO = new Image();
+  LOGO.src = 'assets/img/logo-usp.png';
+  const logoPronto = LOGO.decode().then(() => true, () => false);
 
   function retArredondado(ctx, x, y, w, h, r) {
     ctx.beginPath();
@@ -325,20 +325,10 @@
     [110, 170, 230, 290].forEach(r => { x.beginPath(); x.arc(W - 40, -30, r, 0, Math.PI * 2); x.stroke(); });
     x.restore();
 
-    if (LOGO) {
-      x.save();
-      x.translate(42, 36);
-      x.scale(1.18, 1.18);
-      x.lineJoin = 'round';
-      x.lineCap = 'square';
-      x.strokeStyle = '#ffffff';
-      x.lineWidth = 13;
-      x.stroke(LOGO);
-      x.lineCap = 'butt';
-      x.strokeStyle = '#142c4c';
-      x.lineWidth = 5;
-      x.stroke(LOGO);
-      x.restore();
+    if (await logoPronto) {
+      const lh = 66, lw = lh * LOGO.naturalWidth / LOGO.naturalHeight;
+      x.imageSmoothingQuality = 'high';
+      x.drawImage(LOGO, 42, (140 - lh) / 2, lw, lh);
     }
     x.fillStyle = '#ffffff';
     x.font = '700 36px ' + F;

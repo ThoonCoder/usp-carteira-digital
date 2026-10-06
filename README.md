@@ -60,4 +60,6 @@ assets/js/revogados.js lista de documentos revogados
 assets/img/           logotipo simplificado e ilustração do campus
 ```
 
-Antes da adoção oficial: troque `assets/img/logo-usp.svg` pelo logotipo oficial e, em `config.js`, mude `modoDemonstracao` para `false`. Isso remove a faixa "Protótipo".
+Logotipo: `assets/img/logo-sup.png` é o original; `logo-usp.png` (branco) e `logo-usp-escuro.png` (azul-marinho) são versões transparentes geradas a partir dele.
+
+Modo de exibição: em `config.js`, `modoDemonstracao: true` mostra a faixa "Protótipo" nas páginas públicas; `false` exibe o sistema como adotado.

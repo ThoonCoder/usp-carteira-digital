@@ -1,20 +1,20 @@
 /* =====================================================================
-   Configuração pública do sistema.
-
-   ⚠ Os campos "chavePublica" e "chavePrivadaCifrada" são preenchidos
-   automaticamente: abra admin.html, faça a configuração inicial e
-   substitua ESTE arquivo pelo config.js que o painel gerar.
-
-   A chave privada fica CIFRADA com a sua senha (AES-256 + PBKDF2).
-   Mesmo público no GitHub, ninguém consegue emitir carteirinhas sem ela.
+   Configuração pública do sistema — gerada pelo Painel de Emissão em 06/10/2026.
+   A chave privada está CIFRADA com a senha mestra (AES-256-GCM + PBKDF2).
+   modoDemonstracao: mude para false quando o sistema for adotado oficialmente.
    ===================================================================== */
 window.USP_CONFIG = {
-  instituicao: 'Universidade de São Paulo',
-
-  // Mostra a faixa "Protótipo" nas páginas públicas.
-  // Mude para false somente quando o sistema for adotado oficialmente.
-  modoDemonstracao: true,
-
-  chavePublica: null,
-  chavePrivadaCifrada: null
+  "instituicao": "Universidade de São Paulo",
+  "modoDemonstracao": false,
+  "chavePublica": {
+    "kty": "EC",
+    "crv": "P-256",
+    "x": "Qg1p3Yjeb8jZt9HvybNQE9gkupPCkYdAsNk8x_hDb-w",
+    "y": "SEefaPrSgSSAw5MlR39kyWUV4mvPY_QMeK3PJXyfIkA"
+  },
+  "chavePrivadaCifrada": {
+    "salt": "awzHVQRyMO7VNA7jmhLf2w",
+    "iv": "WfCvc0qZo4Z-lk4s",
+    "dados": "NCLSNMwlT0aPJnLzZyrwWBP8HkXZw1s-dVLOzxHAoQzn5e5P66o9pvrUKL394IROJel9dbTGrY-AIXr27ypgW27LwKCrMPuEo3KcDLSVx42arO7MzrliOkEeTa1hL_3LjkV5gTGcpxfTTVcFhCGc0OvZgbzWkOwcFR0iXYgbfobZSMVexKHTavivF6YQF0mZOCXBrrsGoIQwuw"
+  }
 };

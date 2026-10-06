@@ -248,7 +248,7 @@ img, svg { max-width: 100%; }
   background: radial-gradient(circle at var(--mx, 30%) var(--my, 25%), rgba(255, 255, 255, .95), rgba(255, 255, 255, .55) 45%, rgba(220, 240, 245, .75));
 }
 .selo .selo-texto { text-align: center; color: var(--usp-marinho); font-family: var(--fonte-display); font-weight: 700; line-height: 1.05; }
-.logo-mascara { display: block; background: currentColor; -webkit-mask: url('../img/logo-usp.svg') center / contain no-repeat; mask: url('../img/logo-usp.svg') center / contain no-repeat; }
+.logo-mascara { display: block; background: currentColor; -webkit-mask: url('../img/logo-usp.png') center / contain no-repeat; mask: url('../img/logo-usp.png') center / contain no-repeat; }
 .selo .logo-mascara { width: 56px; height: 26px; margin: 0 auto 4px; }
 .selo .selo-texto small { font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; display: block; }
 
